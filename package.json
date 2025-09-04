@@ -7,7 +7,7 @@
     "electron-webpack": "^2.8.2",
     "webpack": "^4.47.0"
   },
-  "name": "Deepl-Linux-Electron",
+  "name": "deepl",
   "version": "1.6.1",
   "scripts": {
     "dev": "electron-webpack dev",

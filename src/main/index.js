@@ -40,7 +40,6 @@ app.setAboutPanelOptions({
 
 app.on('ready', function() {
     let Menu = require('electron').Menu;
-    //console.log(app.getPath('userData'));
     isRemoveLineBreaks = store.get('remove_line_breaks');
     isHiddenOnStartup = store.get('hidden_on_startup');
     windowWidth = store.get('window_width');
@@ -88,8 +87,7 @@ app.on('ready', function() {
             click: (item) => {
                 isRemoveLineBreaks = item.checked;
                 store.set('remove_line_breaks', isRemoveLineBreaks);
-                //win.webContents.send('translateClipboard', item.checked);
-                translateClipboard(item.checked);
+                insertClipboard(item.checked);
             }
         }, {
             label: "Hidden on startup",
@@ -157,7 +155,6 @@ app.on('ready', function() {
         webPreferences: {
             nodeIntegration: true,
             enableRemoteModule: true
-            //preload: path.join(__static, 'preload.js')
         },
         show: !isHiddenOnStartup
     });
@@ -167,10 +164,9 @@ app.on('ready', function() {
         win.setSize(parseInt(windowWidth, 10), parseInt(windowHeight, 10), false)
     }
 
-    win.loadURL("https://www.deepl.com/translator", {
+    win.loadURL("https://www.deepl.com/write", {
         userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'
     });
-    //win.webContents.openDevTools();
     win.on('close', function(evt) {
         if (!appQuitting) {
             evt.preventDefault();
@@ -221,8 +217,7 @@ ipcMain.on('set-window-size', (event, argWidth, argHeight) => {
 
 function registerShortcut(newShortcut, oldShortcut) {
     let shortcut = globalShortcut.register(newShortcut, () => {
-        //win.webContents.send('translateClipboard', isRemoveLineBreaks);
-        translateClipboard(isRemoveLineBreaks);
+        insertClipboard(isRemoveLineBreaks);
         win.show()
     });
 
@@ -247,7 +242,7 @@ function messageBox(type, title, message) {
     });
 }
 
-function translateClipboard(isChecked) {
+function insertClipboard(isChecked) {
     let txt = (isChecked) ? clipboard.readText().split("\n").join(" ") : clipboard.readText();
     win.webContents.executeJavaScript(`document.querySelector('d-textarea').value=\`` + txt + `\``);
     win.webContents.executeJavaScript(`document.querySelector('d-textarea').dispatchEvent(new InputEvent('input', {inputType: 'insertFromPaste',data: \`` + txt + `\`}))`);
